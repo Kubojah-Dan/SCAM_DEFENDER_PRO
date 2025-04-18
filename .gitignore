@@ -1,0 +1,14 @@
+# Ignore everything
+*
+
+# But NOT these folders/files (unignore)
+!scripts/
+!requirements.txt
+!README.md
+!.gitignore
+!config.yaml
+!dockerfile
+!processors/
+!utils/
+!venv/
+!model_db.py
