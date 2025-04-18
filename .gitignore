@@ -1,11 +1,9 @@
-# Ignore everything
-*
+# Ignore only pickle files in app/models
+/app/models/*.pkl
 
-# But NOT these folders/files (unignore)
-!app/
-!requirements.txt
-!README.md
-!.gitignore
-!config.yaml
-!dockerfile
-!model_db.py
+# Ignore only CSV files in datasets
+/datasets/*.csv
+
+# (Optionally) ignore Python caches and your virtualenv
+__pycache__/
+/venv/
