@@ -2,14 +2,10 @@
 *
 
 # But NOT these folders/files (unignore)
-!scripts/
 !app/
 !requirements.txt
 !README.md
 !.gitignore
 !config.yaml
 !dockerfile
-!processors/
-!utils/
-!venv/
 !model_db.py
