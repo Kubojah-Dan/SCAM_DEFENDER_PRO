@@ -3,6 +3,7 @@
 
 # But NOT these folders/files (unignore)
 !scripts/
+!app/
 !requirements.txt
 !README.md
 !.gitignore
