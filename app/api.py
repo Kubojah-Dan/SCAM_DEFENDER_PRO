@@ -6,7 +6,7 @@ import datetime
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for integration with the frontend
+CORS(app, resources={r"/predict/*": {"origins": "*"}}, supports_credentials=True)  # Enable CORS for integration with the frontend
 
 # Import the utility module (so the transformer is available for unpickling)
 
