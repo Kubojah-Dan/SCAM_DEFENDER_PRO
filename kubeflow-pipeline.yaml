@@ -1,0 +1,24 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata: {generateName: retrain-}
+spec:
+  entrypoint: train-and-deploy
+  templates:
+  - name: train-and-deploy
+    dag:
+      tasks:
+      - name: data-ingest
+        template: ingest
+      - name: train
+        template: train
+        dependencies: [data-ingest]
+      - name: deploy
+        template: deploy
+        dependencies: [train]
+
+  - name: ingest
+    container: {image: myrepo/data-ingest:latest}
+  - name: train
+    container: {image: myrepo/model-train:latest}
+  - name: deploy
+    container: {image: myrepo/deploy:latest}
