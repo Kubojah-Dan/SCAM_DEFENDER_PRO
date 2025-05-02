@@ -1,91 +1,77 @@
-import sys
-import os
+import sys, os
 from flask import Flask, request, jsonify
-import joblib
-import datetime
 from flask_cors import CORS
+import joblib, datetime, pandas as pd
 
+# make sure app/ is importable
+sys.path.append(os.path.dirname(__file__))
+
+from app.utils.clean_text      import clean_url
+from app.utils.domain_features import DomainFeatureExtractor
+
+# Flask setup
 app = Flask(__name__)
-CORS(app, resources={r"/predict/*": {"origins": "*"}}, supports_credentials=True)  # Enable CORS for integration with the frontend
+CORS(app)
 
-# Import the utility module (so the transformer is available for unpickling)
-
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-
-from app.utils.clean_text import CleanTextTransformer
-
-# Load pipelines (these now include our custom transformer)
-email_pipeline = joblib.load("models/email_pipeline.pkl")
-message_pipeline = joblib.load("models/message_pipeline.pkl")
-url_pipeline = joblib.load("models/url_pipeline.pkl")
+# load pipelines
+EMAIL_PIPELINE    = joblib.load(os.path.join('app','models','email_pipeline.pkl'))
+MESSAGE_PIPELINE  = joblib.load(os.path.join('app','models','message_pipeline.pkl'))
+URL_PIPELINE_PATH = os.path.join('app','models','url_pipeline_fast.pkl')
+char_vect, dom_pipe, URL_CLF = joblib.load(URL_PIPELINE_PATH)
 
 @app.route('/')
 def home():
-    return jsonify({"message": "Welcome to Scam Detection API!"})
+    return jsonify({"message":"Scam Detection API is up"})
 
 @app.route('/predict/email', methods=['POST'])
 def predict_email():
     data = request.get_json() or {}
-    subject = data.get("subject", "")
-    body = data.get("body", "")
-    url_flag = data.get("url", "0")
-    combined_text = f"{subject} {body} {'hasurl' if str(url_flag).strip()=='1' else 'nourl'}"
-    
-    proba = email_pipeline.predict_proba([combined_text])[0]
-    prediction = email_pipeline.predict([combined_text])[0]
-    confidence = round(max(proba) * 100, 2)
-    
-    response = {
-        "status": "Scam Detected" if prediction == "1" else "Safe Message",
-        "prediction": "Scam" if prediction == "1" else "Safe",
-        "confidence": f"{confidence}%",
-        "message": ("⚠️ This email appears to be a scam. Please avoid clicking on suspicious links."
-                    if prediction == "1" else "✅ This email appears safe. However, always be cautious."),
-        "timestamp": datetime.datetime.now().isoformat(),
-        "tips": "Never share your personal or financial information via email."
-    }
-    return jsonify(response)
+    subj = data.get('subject','')
+    body = data.get('body','')
+    urlf = data.get('url', '0')
+    txt  = f"{subj} {body} {'hasurl' if str(urlf)=='1' else 'nourl'}"
+    proba = EMAIL_PIPELINE.predict_proba([txt])[0]
+    pred  = EMAIL_PIPELINE.predict([txt])[0]
+    conf  = max(proba)*100
+    return jsonify({
+        "prediction": "Scam" if pred=="1" else "Safe",
+        "confidence": f"{conf:.2f}%",
+        "timestamp": datetime.datetime.utcnow().isoformat()
+    })
 
 @app.route('/predict/message', methods=['POST'])
 def predict_message():
     data = request.get_json() or {}
-    text = data.get("message_text", "")
-    proba = message_pipeline.predict_proba([text])[0]
-    prediction = message_pipeline.predict([text])[0]
-    confidence = round(max(proba) * 100, 2)
-    
-    response = {
-        "status": "Scam Detected" if prediction == "1" else "Safe Message",
-        "prediction": "Scam" if prediction == "1" else "Safe",
-        "confidence": f"{confidence}%",
-        "message": ("⚠️ This message appears to be a scam. Avoid clicking on embedded links."
-                    if prediction == "1" else "✅ This message appears safe."),
-        "timestamp": datetime.datetime.now().isoformat(),
-        "tips": "Be cautious when receiving unexpected messages."
-    }
-    return jsonify(response)
+    txt  = data.get('message_text','')
+    proba = MESSAGE_PIPELINE.predict_proba([txt])[0]
+    pred  = MESSAGE_PIPELINE.predict([txt])[0]
+    conf  = max(proba)*100
+    return jsonify({
+        "prediction": "Scam" if pred=="1" else "Safe",
+        "confidence": f"{conf:.2f}%",
+        "timestamp": datetime.datetime.utcnow().isoformat()
+    })
 
 @app.route('/predict/url', methods=['POST'])
 def predict_url():
     data = request.get_json() or {}
-    text = data.get("url_text", "")
-    proba = url_pipeline.predict_proba([text])[0]
-    prediction = url_pipeline.predict([text])[0]
-    confidence = round(max(proba) * 100, 2)
-    
-    response = {
-        "status": "Scam Detected" if prediction == "1" else "Safe URL",
-        "prediction": "Scam" if prediction == "1" else "Safe",
-        "confidence": f"{confidence}%",
-        "message": ("⚠️ This URL appears suspicious. Do not click on it."
-                    if prediction == "1" else "✅ This URL appears safe."),
-        "timestamp": datetime.datetime.now().isoformat(),
-        "tips": "Always verify the legitimacy of URLs before clicking."
-    }
-    return jsonify(response)
+    url  = data.get('url','')
+    clean = clean_url(url) or "empty"
+    Xc    = char_vect.transform([clean])
+    dom_f = dom_pipe.transform([url])
+    X_all = pd.DataFrame((Xc.toarray()[0].tolist() + dom_f[0].tolist(),))
+    pred  = URL_CLF.predict(X_all)[0]
+    proba = URL_CLF.predict_proba(X_all)[0][int(pred)]*100
+    return jsonify({
+        "prediction": "Scam" if pred!="0" else "Safe",
+        "confidence": f"{proba:.2f}%",
+        "timestamp": datetime.datetime.utcnow().isoformat()
+    })
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
+
+
 
 
 
