@@ -2,6 +2,7 @@ from flask import Flask, request
 from flask_sock import Sock
 import json
 import requests  # For sending audio chunks to AssemblyAI / Vosk
+from kafka import kafka_producer
 
 app = Flask(__name__)
 sock = Sock(app)
