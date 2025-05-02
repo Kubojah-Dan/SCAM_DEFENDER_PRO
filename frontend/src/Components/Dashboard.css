@@ -121,4 +121,526 @@
     background: rgb(95, 200, 245);
     padding: 0 10px;
   }
+  /* Alert Notifications */
+.alert-notification-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
+.alert-notification {
+  display: flex;
+  align-items: center;
+  width: 300px;
+  padding: 15px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  background: white;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+.alert-notification.phishing {
+  border-left: 4px solid #F44336;
+}
+
+.alert-notification.safe {
+  border-left: 4px solid #4CAF50;
+}
+
+.alert-icon {
+  font-size: 24px;
+  margin-right: 15px;
+}
+
+.alert-notification.phishing .alert-icon {
+  color: #F44336;
+}
+
+.alert-notification.safe .alert-icon {
+  color: #4CAF50;
+}
+
+.alert-content {
+  flex-grow: 1;
+}
+
+.alert-content h4 {
+  margin: 0 0 5px 0;
+  font-size: 16px;
+}
+
+.alert-content p {
+  margin: 0;
+  font-size: 14px;
+  color: #555;
+}
+
+.alert-time {
+  font-size: 12px;
+  color: #999;
+  display: block;
+  margin-top: 3px;
+}
+
+.dismiss-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #999;
+  margin-left: 10px;
+}
+/* Profile Sidebar */
+.profile-sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 80px;
+  background: #2c3e50;
+  color: white;
+  transition: width 0.3s ease;
+  z-index: 100;
+  overflow: hidden;
+}
+
+.profile-sidebar.open {
+  width: 250px;
+}
+
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 99;
+  display: none;
+}
+
+.menu-toggle {
+  background: transparent;
+  border: none;
+  color: white;
+  padding: 20px;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+}
+
+.sidebar-content {
+  padding: 20px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.profile-sidebar.open .sidebar-content {
+  opacity: 1;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.user-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 15px;
+}
+
+.user-details {
+  text-align: center;
+}
+
+.user-details h4 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.user-details p {
+  margin: 5px 0 0;
+  font-size: 0.8rem;
+  color: #bdc3c7;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+}
+
+.nav-item {
+  color: rgb(69, 59, 59);
+  text-decoration: none;
+  padding: 12px 5px;
+  display: flex;
+  align-items: center;
+  transition: background 0.2s;
+  border-radius: 4px;
+  padding-left: 10px;
+}
+
+.nav-item:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+.nav-icon {
+  margin-right: 15px;
+  font-size: 1.2rem;
+}
+
+.nav-item.logout {
+  margin-top: 20px;
+  color: #e74c3c;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .profile-sidebar {
+    width: 0;
+  }
   
+  .profile-sidebar.open {
+    width: 250px;
+    z-index: 100;
+  }
+  
+  .sidebar-overlay {
+    display: block;
+  }
+}
+  
+/* Threat Monitor Styles */
+.threat-monitor {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.threat-indicator {
+  display: flex;
+  align-items: center;
+  padding: 12px 20px;
+  color: white;
+  border-radius: 6px;
+  font-weight: bold;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+}
+
+.pulse-animation {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 12px;
+  background: white;
+  box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+  animation: pulse 2s infinite;
+}
+
+.pulse-animation.green {
+  animation: pulse 2s infinite;
+}
+
+.pulse-animation.yellow {
+  animation: pulse 1.5s infinite;
+}
+
+.pulse-animation.red {
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+  }
+}
+
+/* Threat Notification */
+.threat-notification {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 320px;
+  padding: 15px;
+  border-radius: 8px;
+  color: white;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  z-index: 1000;
+  animation: slideIn 0.3s ease-out;
+}
+
+.threat-notification.red {
+  background: #F44336;
+  border-left: 5px solid #D32F2F;
+}
+
+.threat-notification.yellow {
+  background: #FFC107;
+  border-left: 5px solid #FFA000;
+  color: #333;
+}
+
+.notification-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.notification-icon {
+  font-size: 20px;
+  margin-right: 10px;
+}
+
+.dismiss-btn {
+  background: transparent;
+  border: none;
+  color: inherit;
+  margin-left: auto;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.dismiss-btn:hover {
+  opacity: 1;
+}
+
+.threat-details {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255,255,255,0.3);
+  font-size: 0.9em;
+}
+
+.blocked-url {
+  color: white;
+  text-decoration: underline;
+  word-break: break-all;
+  display: inline-block;
+  margin-top: 5px;
+}
+
+/* Recent Threats List */
+.recent-threats {
+  margin-top: 20px;
+  background: #f5f5f5;
+  padding: 15px;
+  border-radius: 6px;
+}
+
+.recent-threats h4 {
+  margin: 0 0 10px 0;
+  color: #333;
+}
+
+.recent-threats ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.recent-threats li {
+  padding: 8px 0;
+  border-bottom: 1px solid #ddd;
+  display: flex;
+  align-items: center;
+}
+
+.recent-threats li:last-child {
+  border-bottom: none;
+}
+
+.threat-level-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.7em;
+  font-weight: bold;
+  margin-right: 10px;
+  color: white;
+}
+
+.recent-threats li.red .threat-level-badge {
+  background: #F44336;
+}
+
+.recent-threats li.yellow .threat-level-badge {
+  background: #FFC107;
+  color: #333;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+/* In Dashboard.css */
+.profile-sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 80px; /* Collapsed width */
+  z-index: 1000; /* Ensure it's above other elements */
+  background: #2c3e50; /* Test with bright color */
+}
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: -300px;
+  width: 280px;
+  height: 100vh;
+  background: #2c3e50;
+  color: rgb(224, 216, 216);
+  transition: all 0.3s ease;
+  z-index: 1000;
+  box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+}
+
+.sidebar.open {
+  left: 0;
+}
+
+.sidebar-header {
+  padding: 20px;
+  background: #1a252f;
+  position: relative;
+}
+
+.close-btn {
+  position: absolute;
+  right: 15px;
+  top: 15px;
+  background: none;
+  border: none;
+  color: rgb(236, 225, 225);
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.user-profile {
+  text-align: center;
+  padding-top: 20px;
+}
+
+.avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 10px;
+  border: 3px solid #3498db;
+}
+
+.sidebar-nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0;
+}
+
+.sidebar-nav li a {
+  display: block;
+  padding: 12px 20px;
+  color: #93dbed;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.sidebar-nav li a:hover {
+  background: #34495e;
+  color: #3498db;
+}
+
+.sidebar-nav i {
+  margin-right: 10px;
+  width: 20px;
+  text-align: center;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 250px;
+  }
+}
+.dashboard {
+  display: flex;
+  min-height: 100vh;
+  position: relative;
+}
+
+.main-content {
+  flex-grow: 1;
+  transition: margin-left 0.3s ease;
+  margin-left: 0;
+}
+
+.dashboard.sidebar-open .main-content {
+  margin-left: 280px;
+}
+
+.content-area {
+  padding: 20px;
+  background-color: #cbdcf5;
+  min-height: calc(100vh - 120px); /* Adjust based on header height */
+}
+
+/* Header adjustments for sidebar toggle */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 30px;
+  background: #e6e0e0;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.profile-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.profile-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid #3498db;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .dashboard.sidebar-open .main-content {
+    margin-left: 0;
+    transform: translateX(280px);
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+  }
+  
+}
