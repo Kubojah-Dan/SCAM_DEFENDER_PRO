@@ -1,0 +1,4 @@
+virustotal_api_key: "The_vigilant_four_13"
+vpn_proxies:
+  http: "http://the-vigilant:3810"
+  https: "https://the-vigilant:3810"

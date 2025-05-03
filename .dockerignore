@@ -1,0 +1,14 @@
+# ─── Python virtual env ─────────────────────────────
+venv/
+# ─── Model artifacts & pickles ───────────────────────
+app/models/*.pkl
+# ─── Raw datasets ────────────────────────────────────
+app/datasets/*.csv
+# ─── SQLite DB ───────────────────────────────────────
+app/data/predictions.db
+# ─── Git metadata & logs ─────────────────────────────
+.git
+.gitignore
+Dockerfile*
+docker-compose*.yml
+logs/

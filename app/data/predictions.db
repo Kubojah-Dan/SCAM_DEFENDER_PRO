@@ -1,0 +1,9 @@
+CREATE TABLE IF NOT EXISTS predictions (
+  id          INTEGER PRIMARY KEY,
+  model       TEXT,
+  input_text  TEXT,
+  predicted   TEXT,
+  probability REAL,
+  true_label  TEXT,
+  ts          DATETIME DEFAULT CURRENT_TIMESTAMP
+);

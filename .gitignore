@@ -1,0 +1,22 @@
+# Ignore virtual environment
+venv/
+.env/
+__pycache__/
+*.pyc
+
+# Ignore datasets and models
+*.csv
+*.pkl
+
+# Ignore cache and logs
+.cache*/
+*.log
+
+# Ignore large trained models or temp data folders
+app/datasets/
+app/models/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
