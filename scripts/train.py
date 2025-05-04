@@ -25,14 +25,6 @@ from app.utils.feature_eng     import ScamKeywordCounter, URLLexicalFeatures, Fi
 from app.utils.domain_features import DomainFeatureExtractor
 from sklearn.preprocessing import FunctionTransformer
 
-
-from sklearn.pipeline import Pipeline, FeatureUnion
-from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import train_test_split
-from sklearn.feature_extraction.text import HashingVectorizer
-from sklearn.ensemble import VotingClassifier
-from scipy.sparse import hstack, csr_matrix
-
 warnings.simplefilter("ignore", category=UserWarning)
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 log = logging.getLogger(__name__)
@@ -56,7 +48,6 @@ WHITELIST = [
     "chase.com",
     "wellsfargo.com"
 ]
-
 
 # ── Paths ───────────────────────────────────────────────────────────────────────
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -118,32 +109,55 @@ def train_message_transformer():
     log.info("🔹 Training Message Transformer Model…")
     df = pd.read_csv(PATHS["message_in"]).dropna()
     df['label'] = LabelEncoder().fit_transform(df['label'])
-    # split
-    train_df, test_df = train_test_split(df, test_size=0.2, stratify=df['label'], random_state=42)
-    # tokenize
+    # split into train/test
+    train_df, test_df = train_test_split(
+        df, test_size=0.2, stratify=df['label'], random_state=42
+    )
+    # tokenize text
     tokenizer = AutoTokenizer.from_pretrained("distilbert-base-uncased")
-    def encode(examples):
-        return tokenizer(examples["message"], truncation=True, padding="max_length", max_length=64)
-    train_enc = encode({"message": train_df["message"].tolist()})
-    test_enc  = encode({"message": test_df["message"].tolist()})
-    # torch dataset
+    train_enc = tokenizer(
+        train_df["message"].tolist(), truncation=True, padding="max_length", max_length=64, return_tensors="pt"
+    )
+    test_enc = tokenizer(
+        test_df["message"].tolist(), truncation=True, padding="max_length", max_length=64, return_tensors="pt"
+    )
+    # define PyTorch Dataset returning dict with labels
     class SMSDataset(torch.utils.data.Dataset):
-        def __init__(self, encodings, labels): 
-            self.encodings, self.labels = encodings, labels
-        def __len__(self): return len(self.labels)
-        def __getitem__(self,i):
-            return {k: torch.tensor(v[i]) for k,v in self.encodings.items()}, torch.tensor(self.labels[i])
+        def __init__(self, encodings, labels):
+            self.encodings = encodings
+            self.labels = labels
+        def __len__(self):
+            return len(self.labels)
+        def __getitem__(self, idx):
+            item = {k: v[idx] for k, v in self.encodings.items()}
+            item["labels"] = torch.tensor(self.labels[idx], dtype=torch.long)
+            return item
     train_ds = SMSDataset(train_enc, train_df['label'].tolist())
-    test_ds  = SMSDataset(test_enc,  test_df['label'].tolist())
-    # model + trainer
-    model = AutoModelForSequenceClassification.from_pretrained("distilbert-base-uncased", num_labels=2)
-    args  = TrainingArguments(output_dir="app/models/msg_trf", num_train_epochs=2, per_device_train_batch_size=16)
-    trainer = Trainer(model=model, args=args, train_dataset=train_ds, eval_dataset=test_ds)
+    test_ds = SMSDataset(test_enc, test_df['label'].tolist())
+    # create model and training arguments
+    model = AutoModelForSequenceClassification.from_pretrained(
+        "distilbert-base-uncased", num_labels=2
+    )
+    args = TrainingArguments(
+        output_dir="app/models/msg_trf",
+        num_train_epochs=2,
+        per_device_train_batch_size=16,
+        logging_dir="logs",
+        logging_steps=10,
+        eval_strategy="epoch"
+    )
+    trainer = Trainer(
+        model=model,
+        args=args,
+        train_dataset=train_ds,
+        eval_dataset=test_ds,
+        tokenizer=tokenizer
+    )
+    # train and save
     trainer.train()
-    # save
-    model.save_pretrained("app/models/msg_trfft")
+    model.save_pretrained("app/models/msg_trf_model")
     tokenizer.save_pretrained("app/models/msg_trf_tokenizer")
-    log.info("   → Transformer message model saved.\n")
+    log.info("   → Transformer message model saved.")
 
 # ── 3) FAST URL model ─────────────────────────────────────────────────────────
 
@@ -223,9 +237,10 @@ def train_file():
 # ── Main ───────────────────────────────────────────────────────────────────────
 if __name__ == "__main__":
     train_email()
-    train_message()
+    train_message_transformer()
     train_url()
     train_file()
+
 
 
 
