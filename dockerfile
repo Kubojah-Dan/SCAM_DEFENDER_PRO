@@ -1,19 +1,9 @@
-# Use official Python image
-FROM python:3.13-slim
-
-# Set working directory
+FROM python:3.10-slim
 WORKDIR /app
-
-# Copy files
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
-
-# Install dependencies
-RUN pip install --upgrade pip && \
-    pip install -r requirements.txt
-
-# Expose the Flask port
 EXPOSE 5000
+CMD ["gunicorn", "-b", "0.0.0.0:5000", "app.api:app"]
 
-# Run the app
-CMD ["python", "app/api.py"]
 
