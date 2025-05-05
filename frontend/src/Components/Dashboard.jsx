@@ -7,7 +7,6 @@ import EmailScanner from './EmailScanner';
 import MessageScanner from './MessageScanner';
 import ThreatIndicator from './ThreatIndicator';
 import AlertNotification from './AlertNotification';
-import CustomerReviews from './CustomerReviews';
 import ProfileSidebar from './ProfileSidebar';
 import './Dashboard.css';
 
@@ -17,7 +16,6 @@ export default function Dashboard() {
   const [user] = useState({
     name: "Lina",
     email: "sowmyalina@gmail.com",
-    avatar: "https://i.pravatar.cc/150?img=3",
     role: "Security Analyst"
   });
 
@@ -60,7 +58,7 @@ export default function Dashboard() {
           {activeTab === 'message' && <MessageScanner />}
           {activeTab === 'threatindicator' && <ThreatIndicator />}
           {activeTab === 'alert' && <AlertNotification />}
-          {activeTab === 'customer' && <CustomerReviews />}
+          
           
           {/* Profile content shows in the sidebar instead */}
         </div>

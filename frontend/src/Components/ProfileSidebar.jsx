@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { FiMenu, FiX, FiUser, FiLogOut, FiSettings, FiHelpCircle, FiChevronRight, FiChevronLeft } from 'react-icons/fi';
 import Button from './Button';
+
 import './Dashboard.css';
 
 const ProfileSidebar = ({ user, onLogout, onNavigate }) => {
@@ -132,14 +133,6 @@ const ProfileSidebar = ({ user, onLogout, onNavigate }) => {
               </button>
               
               <h3>Account Details</h3>
-              
-              <div className="account-avatar-container">
-                <img 
-                  src={user.photoURL || '/default-avatar.png'} 
-                  alt={user.name || 'User'} 
-                  className="account-avatar"
-                />
-              </div>
               
               <div className="account-detail">
                 <label>Full Name:</label>
