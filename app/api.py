@@ -38,6 +38,21 @@ def register():
     USERS[u]=p
     return jsonify(msg="Registered"),200
 
+@app.route("/auth/register", methods=["POST"])
+def register():
+     data = request.json or {}
+     email         = data.get("email")
+     password      = data.get("password")
+     confirm_pass  = data.get("confirm_password")
+     if not email or not password or not confirm_pass:
+         return jsonify(msg="email, password and confirm_password are required"), 400
+     if password != confirm_pass:
+         return jsonify(msg="password and confirm_password must match"), 400
+     if email in USERS:
+         return jsonify(msg="User exists"), 400
+     USERS[email] = password
+     return jsonify(msg="Registered"), 200
+
 @app.route("/auth/login", methods=["POST"])
 def login():
     u,p = request.json.get("user"), request.json.get("pass")
@@ -45,9 +60,21 @@ def login():
     token = create_access_token(identity=u)
     return jsonify(access_token=token),200
 
+@app.route("/auth/login", methods=["POST"])
+def login():
+     data = request.json or {}
+     email    = data.get("email")
+     password = data.get("password")
+     if not email or not password:
+         return jsonify(msg="email and password required"), 400
+     if USERS.get(email) != password:
+         return jsonify(msg="Bad credentials"), 401
+     token = create_access_token(identity=email)
+     return jsonify(access_token=token), 200
+
 # ── prediction endpoints ───────────────────────────────────────────────────────
 @app.route("/predict/email", methods=["POST"])
-@jwt_required()
+@jwt_required() # 192.168.101.102:8080/predit/email
 def predict_email():
     # allow both subject and message, but only require at least one
     subj = request.json.get("subject", "") or ""

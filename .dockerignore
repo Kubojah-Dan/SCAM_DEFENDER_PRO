@@ -1,3 +1,18 @@
+# ─ ignore Python venv, git, caches ─────────────────
+venv
+.git
+__pycache__
+*.pyc
+
+# ─ ignore your ML artifacts and data ───────────────
+app/models
+app/datasets
+
+# ─ ignore Airflow‑docker state & logs ─────────────
+airflow-docker/logs
+airflow-docker/airflow-docker-*.log*
+
+
 # ─── Python virtual env ─────────────────────────────
 venv/
 # ─── Model artifacts & pickles ───────────────────────

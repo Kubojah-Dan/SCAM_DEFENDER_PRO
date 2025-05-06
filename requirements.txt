@@ -23,5 +23,6 @@ torch
 wordcloud
 xgboost
 lightgbm
+gunicorn
 
 
