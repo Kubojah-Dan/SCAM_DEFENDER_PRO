@@ -5,7 +5,6 @@ __pycache__
 *.pyc
 
 # ─ ignore your ML artifacts and data ───────────────
-app/models
 app/datasets
 
 # ─ ignore Airflow‑docker state & logs ─────────────

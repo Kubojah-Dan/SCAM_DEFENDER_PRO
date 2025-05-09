@@ -12,7 +12,7 @@ from app.utils.feature_eng     import FileFeatureExtractor
 from app.utils.domain_features import DomainFeatureExtractor
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": ["http://localhost:5173", "http://localhost:5182", "https://scamdefender.com"]}})
 app.config["JWT_SECRET_KEY"] = "super-secret-change-me"
 jwt = JWTManager(app)
 
@@ -31,12 +31,6 @@ FE_PIPE, FILE_PIPE = load_joblib(["app", "models", "file_malware_pipeline.pkl"])
 
 # ── auth endpoints (unchanged) ─────────────────────────────────────────────────
 USERS = {}
-@app.route("/auth/register", methods=["POST"])
-def register():
-    u,p = request.json.get("user"), request.json.get("pass")
-    if u in USERS: return jsonify(msg="User exists"),400
-    USERS[u]=p
-    return jsonify(msg="Registered"),200
 
 @app.route("/auth/register", methods=["POST"])
 def register():
@@ -53,12 +47,6 @@ def register():
      USERS[email] = password
      return jsonify(msg="Registered"), 200
 
-@app.route("/auth/login", methods=["POST"])
-def login():
-    u,p = request.json.get("user"), request.json.get("pass")
-    if USERS.get(u)!=p: return jsonify(msg="Bad credentials"),401
-    token = create_access_token(identity=u)
-    return jsonify(access_token=token),200
 
 @app.route("/auth/login", methods=["POST"])
 def login():
@@ -74,7 +62,7 @@ def login():
 
 # ── prediction endpoints ───────────────────────────────────────────────────────
 @app.route("/predict/email", methods=["POST"])
-@jwt_required() # 192.168.101.102:8080/predit/email
+#@jwt_required() # 192.168.101.102:8080/predit/email
 def predict_email():
     # allow both subject and message, but only require at least one
     subj = request.json.get("subject", "") or ""
@@ -89,7 +77,7 @@ def predict_email():
                    confidence=f"{conf:.1f}%", timestamp=datetime.datetime.utcnow().isoformat())
 
 @app.route("/predict/message", methods=["POST"])
-@jwt_required()
+#@jwt_required()
 def predict_message():
     txt = request.json.get("message_text", "")
     if not isinstance(txt, str):
@@ -100,7 +88,7 @@ def predict_message():
                    confidence=f"{conf:.1f}%", timestamp=datetime.datetime.utcnow().isoformat())
 
 @app.route("/predict/url", methods=["POST"])
-@jwt_required()
+#@jwt_required()
 def predict_url():
     url = request.json.get("url", "")
     if not isinstance(url, str):
@@ -115,7 +103,7 @@ def predict_url():
     )
 
 @app.route("/predict/file", methods=["POST"])
-@jwt_required()
+#@jwt_required()
 def predict_file():
     # 1) Make sure a file was uploaded
     if 'file' not in request.files:
@@ -159,6 +147,33 @@ def predict_file():
     
 if __name__=="__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
